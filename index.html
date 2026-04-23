@@ -604,6 +604,16 @@
                 flex-direction: column;
                 align-items: stretch;
             }
+            
+            /* Mobilde tutanak kartı düzenlemeleri */
+            #minutesTab .note-card {
+                padding: 0.75rem;
+            }
+            
+            #minutesList {
+                max-height: none !important;
+                overflow-y: visible !important;
+            }
         }
 
         .pdf-icon {
@@ -623,6 +633,26 @@
             opacity: 1;
             background: #f1f5f9;
             color: #dc2626;
+        }
+
+                /* Tutanak başlık satırı için */
+        .minute-title-row {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .minute-title-text {
+            display: inline;
+            font-weight: 500;
+            word-break: break-word;
+        }
+        
+        .minute-title-icons {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-left: 0.5rem;
+            vertical-align: middle;
         }
 
         .reading-icon {
@@ -4910,65 +4940,67 @@
                 }).join(" ");
 
                 return `<div class="note-card">
-                <div class="d-flex justify-content-between">
-                    <div class="flex-grow-1">
-                        <div class="d-flex gap-2 mb-1 flex-wrap align-items-center">
+                <div>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex gap-2 flex-wrap align-items-center">
                             <span class="location-tag"><i class="bi bi-pin-map"></i> ${escapeHtml(getLocationDisplayName(m.locationId))}</span>
-                            ${filterMinuteLanguage !== "all" ? `<span class="badge-tag bg-info text-white ms-1">${filterMinuteLanguage === 'tr' ? '🇹🇷 Türkçe' : filterMinuteLanguage === 'en' ? '🇬🇧 English' : filterMinuteLanguage === 'ru' ? '🇷🇺 Русский' : filterMinuteLanguage === 'de' ? '🇩🇪 Deutsch' : filterMinuteLanguage === 'fr' ? '🇫🇷 Français' : '🇸🇦 العربية'}</span>` : ''}
-                            
+                            ${filterMinuteLanguage !== "all" ? `<span class="badge-tag bg-info text-white">${filterMinuteLanguage === 'tr' ? '🇹🇷 Türkçe' : filterMinuteLanguage === 'en' ? '🇬🇧 English' : filterMinuteLanguage === 'ru' ? '🇷🇺 Русский' : filterMinuteLanguage === 'de' ? '🇩🇪 Deutsch' : filterMinuteLanguage === 'fr' ? '🇫🇷 Français' : '🇸🇦 العربية'}</span>` : ''}
                             <span class="timestamp">${m.date}</span>
                             ${availableLangs ? `<span class="badge-tag bg-light text-dark" title="${t?.existing_languages || 'Mevcut diller'}: ${availableLangs}"><i class="bi bi-translate"></i> ${availableLangs}</span>` : ''}
                         </div>
-                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                            <div class="fw-medium">${escapeHtml(displayTitle)}</div>
-                            <div class="icon-group">
-                                <div class="speak-icon minute-speak" data-text="${escapeHtml(displayTitle)}" data-lang="${currentSpeechLang()}" data-id="minute_title_${originalIdx}">
-                                    <i class="bi bi-volume-up"></i>
-                                </div>
-                                <div class="mic-icon minute-mic" data-text="${escapeHtml(displayTitle)}" data-lang="${currentSpeechLang()}" title="${t?.check_pronunciation || 'Telaffuz kontrolü'}">
-                                    <i class="bi bi-mic"></i>
-                                </div>
+                        <div class="d-flex gap-2">
+                            <div class="pdf-icon minute-pdf" data-idx="${originalIdx}" title="${t?.download_pdf || 'PDF Olarak İndir'}">
+                                <i class="bi bi-file-pdf"></i>
                             </div>
-                        </div>
-                        <div class="small mb-1">
-                            ${escapeHtml(displayContent)}
-                            <div class="icon-group d-inline-flex ms-2">
-                                <div class="speak-icon minute-content-speak" data-text="${escapeHtml(displayContent)}" data-lang="${currentSpeechLang()}" data-id="minute_content_${originalIdx}" style="width: 20px; height: 20px; font-size: 0.75rem;">
-                                    <i class="bi bi-volume-up"></i>
-                                </div>
-                                <div class="mic-icon minute-content-mic" data-text="${escapeHtml(displayContent)}" data-lang="${currentSpeechLang()}" title="${t?.check_pronunciation || 'Telaffuz kontrolü'}" style="width: 20px; height: 20px; font-size: 0.75rem;">
-                                    <i class="bi bi-mic"></i>
-                                </div>
+                            <div class="print-icon minute-print" data-idx="${originalIdx}" title="${t?.print_btn || 'Yazdır'}">
+                                <i class="bi bi-printer"></i>
                             </div>
-                        </div>
-                        ${minuteData?.evaluation ? `
-                        <div class="small text-muted mt-2 pt-1 border-top">
-                            <strong>📌</strong> ${escapeHtml(minuteData.evaluation)}
-                            <div class="icon-group d-inline-flex ms-2">
-                                <div class="speak-icon minute-eval-speak" data-text="${escapeHtml(minuteData.evaluation)}" data-lang="${currentSpeechLang()}" data-id="minute_eval_${originalIdx}" style="width: 20px; height: 20px; font-size: 0.75rem;">
-                                    <i class="bi bi-volume-up"></i>
-                                </div>
-                                <div class="mic-icon minute-eval-mic" data-text="${escapeHtml(minuteData.evaluation)}" data-lang="${currentSpeechLang()}" title="${t?.check_pronunciation || 'Telaffuz kontrolü'}" style="width: 20px; height: 20px; font-size: 0.75rem;">
-                                    <i class="bi bi-mic"></i>
-                                </div>
+                            <div class="translate-icon minute-translate" data-idx="${originalIdx}" title="${t?.translate_btn || 'Çeviriler'}">
+                                <i class="bi bi-translate"></i>
                             </div>
-                        </div>
-                        ` : ''}
-                    </div>
-                    <div class="d-flex gap-2 ms-2">
-                        <div class="pdf-icon minute-pdf" data-idx="${originalIdx}" title="${t?.download_pdf || 'PDF Olarak İndir'}">
-                            <i class="bi bi-file-pdf"></i>
-                        </div>
-                        <div class="print-icon minute-print" data-idx="${originalIdx}" title="${t?.print_btn || 'Yazdır'}">
-                            <i class="bi bi-printer"></i>
-                        </div>
-                        <div class="translate-icon minute-translate" data-idx="${originalIdx}" title="${t?.translate_btn || 'Çeviriler'}">
-                            <i class="bi bi-translate"></i>
-                        </div>
-                        <div class="delete-icon minute-delete" data-idx="${originalIdx}">
-                            <i class="bi bi-trash3"></i>
+                            <div class="delete-icon minute-delete" data-idx="${originalIdx}">
+                                <i class="bi bi-trash3"></i>
+                            </div>
                         </div>
                     </div>
+                    
+                    <div class="minute-title-row">
+                        <span class="minute-title-text">${escapeHtml(displayTitle)}</span>
+                        <span class="minute-title-icons">
+                            <span class="speak-icon minute-speak" data-text="${escapeHtml(displayTitle)}" data-lang="${currentSpeechLang()}" data-id="minute_title_${originalIdx}">
+                                <i class="bi bi-volume-up"></i>
+                            </span>
+                            <span class="mic-icon minute-mic" data-text="${escapeHtml(displayTitle)}" data-lang="${currentSpeechLang()}" title="${t?.check_pronunciation || 'Telaffuz kontrolü'}">
+                                <i class="bi bi-mic"></i>
+                            </span>
+                        </span>
+                    </div>
+                    
+                    <div class="small mb-2" style="word-break: break-word; white-space: normal;">
+                        ${escapeHtml(displayContent)}
+                        <span class="icon-group d-inline-flex ms-2" style="vertical-align: middle;">
+                            <span class="speak-icon minute-content-speak" data-text="${escapeHtml(displayContent)}" data-lang="${currentSpeechLang()}" data-id="minute_content_${originalIdx}" style="width: 20px; height: 20px; font-size: 0.75rem;">
+                                <i class="bi bi-volume-up"></i>
+                            </span>
+                            <span class="mic-icon minute-content-mic" data-text="${escapeHtml(displayContent)}" data-lang="${currentSpeechLang()}" title="${t?.check_pronunciation || 'Telaffuz kontrolü'}" style="width: 20px; height: 20px; font-size: 0.75rem;">
+                                <i class="bi bi-mic"></i>
+                            </span>
+                        </span>
+                    </div>
+                    
+                    ${minuteData?.evaluation ? `
+                    <div class="small text-muted mt-2 pt-2 border-top" style="word-break: break-word; white-space: normal;">
+                        <strong>📌</strong> ${escapeHtml(minuteData.evaluation)}
+                        <span class="icon-group d-inline-flex ms-2" style="vertical-align: middle;">
+                            <span class="speak-icon minute-eval-speak" data-text="${escapeHtml(minuteData.evaluation)}" data-lang="${currentSpeechLang()}" data-id="minute_eval_${originalIdx}" style="width: 20px; height: 20px; font-size: 0.75rem;">
+                                <i class="bi bi-volume-up"></i>
+                            </span>
+                            <span class="mic-icon minute-eval-mic" data-text="${escapeHtml(minuteData.evaluation)}" data-lang="${currentSpeechLang()}" title="${t?.check_pronunciation || 'Telaffuz kontrolü'}" style="width: 20px; height: 20px; font-size: 0.75rem;">
+                                <i class="bi bi-mic"></i>
+                            </span>
+                        </span>
+                    </div>
+                    ` : ''}
                 </div>
             </div>`;
             }).join('');
